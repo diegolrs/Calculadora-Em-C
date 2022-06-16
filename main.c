@@ -2,10 +2,16 @@
 #include <math.h>
 #define TAMANHO_DA_LINHA 15
 
+typedef struct 
+{
+    double parteReal;
+    double parteImaginaria;
+} SaidaEquacao;
+
 float raiz(float num);
 
 void printarLinha();
-void printarSaidaEquacao(double saidas[], int tamanhoDoArray);
+void printarSaidaEquacao(SaidaEquacao saidas[], int tamanhoDoArray);
 void printarFatorial(int numero, int numeroEmFatorial);
 
 void lerEntradasEquacaoGrau2();
@@ -21,7 +27,7 @@ void resolveEquacaoGrau3(double a, double b, double c, double d);
 // Operacoes Basicas ---------------
 float raiz(float num)
 {
-	return sqrt(num);
+    return sqrt(num);
 }
 
 float soma(float numero1, float numero2)
@@ -68,7 +74,7 @@ void printarLinha()
     puts("");
 }
 
-void printarSaidaEquacao(double saidas[], int tamanhoDoArray)
+void printarSaidaEquacao(SaidaEquacao saidas[], int tamanhoDoArray)
 {
     if(tamanhoDoArray <= 0)
     {
@@ -80,7 +86,14 @@ void printarSaidaEquacao(double saidas[], int tamanhoDoArray)
     printf("\nRaizes:\n");
     
     for(int i = 0; i < tamanhoDoArray; i++)
-        printf("x%d: %f\n", i, saidas[i]);
+    {
+        int temParteImaginaria = saidas[i].parteImaginaria != 0;
+      
+        if(temParteImaginaria)
+          printf("x%d: %f + %fi\n", i, saidas[i].parteReal, saidas[i].parteImaginaria);
+        else
+          printf("x%d: %f\n", i, saidas[i].parteReal);
+    }
         
     printarLinha();
 }
@@ -143,79 +156,110 @@ void lerEntradasEquacaoGrau3()
 
 void resolveEquacaoGrau0(double a)
 {	
-    double raizes[1];
-    raizes[0] = -a;
+    SaidaEquacao raizes[1];
+    raizes[0].parteReal = -a;
+    raizes[0].parteImaginaria = 0;
     printarSaidaEquacao(raizes, 1);
 }
 
 void resolveEquacaoGrau1(double a, double b)
 {
-    double raizes[1];
-	raizes[0] = -b/a;
+  SaidaEquacao raizes[1];
+	raizes[0].parteReal = -b/a;
+  raizes[0].parteImaginaria = 0;
 	printarSaidaEquacao(raizes, 1);
 }
 
 void resolveEquacaoGrau2(double a, double b, double c)
 {
-    double raizes[2];
+    SaidaEquacao raizes[2];
     
-	float delta = b*b - 4*a*c;
+    float delta = b*b - 4*a*c;
 	
     if(delta < 0)
-	    printarSaidaEquacao(raizes, 0);
-	else if(delta == 0)
-	{
-		raizes[0] = -b/2*a;
-		printarSaidaEquacao(raizes, 1);
-	}
-	else
-	{
-		raizes[0] = (-b + raiz(delta))/(2*a);
-		raizes[1] = (-b - raiz(delta))/(2*a);
-	    printarSaidaEquacao(raizes, 2);
-	}
+    {
+        delta *= -1;
+
+        raizes[0].parteReal = 0;
+        raizes[0].parteImaginaria = (-b + raiz(delta))/(2*a);
+    
+	raizes[1].parteReal = 0;
+	raizes[1].parteImaginaria = (-b - raiz(delta))/(2*a);
+
+        printarSaidaEquacao(raizes, 2);
+    }
+    else if(delta == 0)
+    {
+        raizes[0].parteReal = -b/2*a;
+        raizes[0].parteImaginaria = 0;
+	printarSaidaEquacao(raizes, 1);
+    }
+    else
+    {
+        raizes[0].parteReal = (-b + raiz(delta))/(2*a);
+        raizes[0].parteImaginaria = 0;
+    
+	raizes[1].parteReal = (-b - raiz(delta))/(2*a);
+	raizes[1].parteImaginaria = 0;
+    
+	printarSaidaEquacao(raizes, 2);
+    }
 }
 
 void resolveEquacaoGrau3(double a, double b, double c, double d)
 {
-    double p, q, delta, delta2, modulo, e, r, t;
-    double x1, x2, x3, y1, y2, y2_2, y3, y3_2;
+    double A, B, C, D, p, q, delta, e, r, t;
+    double x1, x2, x2real, x2imag, x3, x3real, x3imag;
+    double y1, y1_2, y1_3, y2, y2_2, y2_3, y3;
     
-    double raizes[3];
+    SaidaEquacao raizes[3];
     
-    p = -pow(b, 2)/3*a*a + c/a;
-    q = (2*pow(b, 3) - 9*a*b*c + 27*a*a*d)/27*pow(a, 3);
+    A = a/a;
+    B = b/a;
+    C = c/a;
+    D = d/a;
+    
+    p = -pow(B, 2)/3*A*A + C/A;
+    q = (2*pow(B, 3) - 9*A*B*C + 27*A*A*D)/27*pow(A, 3);
     delta = (q*q/4) + (pow(p, 3)/27);
     e = pow(-delta, 0.5);
     r = pow(q*q/4 + e*e, 0.5);
     t = acos((-q)/(2*r));
 
-    if(delta >= 0){
-        y1 = cbrt(-q/2+raiz(delta))+cbrt(-q/2-raiz(delta)); 
-        delta2 = pow((y1/2), 2) + q/y1;
-        modulo = raiz((delta2*delta2));
-        y2 = -y1/2;
-         y2_2 = raiz(modulo); 
-        y3 = -y1/2;
-         y3_2 = raiz(modulo); 
+    if(delta >= 0)
+    {
+        y1 = cbrt(-q/2+(sqrt(delta))); 
+        y2 = cbrt(-q/2-(sqrt(delta)));
+        y3 = B/(3*A);
+        x1 = y1 + y2 - y3;
+        y1_2 = -y1/2;
+        y2_2 = -y2/2;
+        x2real = y1_2 + y2_2 - y3;
+        y1_3 = (y1 * sqrt(3))/2;
+        y2_3 = (y2 * -sqrt(3))/2;
+        x2imag = y1_3 + y2_3;
+        x3real = x2real;
+        x3imag = -x2imag;
 
-        x1 = y1 - a/3;
-        x2 = y2 - a/3;   
-        x3 = y3 - a/3;
-        
-        raizes[0] = x1;
-        raizes[1] = x2 + y2_2;
-        raizes[2] = x2 + y3_2;
-    } 
+        raizes[0].parteReal = x1;
+        raizes[0].parteImaginaria = 0;
+      
+        raizes[1].parteReal = x2real;
+        raizes[1].parteImaginaria = x2imag;
+      
+        raizes[2].parteReal = x3real;
+        raizes[2].parteImaginaria = x3imag;
+    }
     else
     {
-        x1 = 2 * cbrt(r) * cos((t/3)) - b/3;
-        x2 = 2 * cbrt(r) * cos(((t + (360/(180.0/M_PI)))/3)) - b/3;
-        x3 = 2 * cbrt(r) * cos(((t + (720/(180.0/M_PI)))/3)) - b/3;
-        
-        raizes[0] = x1;
-        raizes[1] = x2;
-        raizes[2] = x3;
+        raizes[0].parteReal = 2 * cbrt(r) * cos((t/3)) - B/3;
+        raizes[0].parteImaginaria = 0;
+      
+        raizes[1].parteReal = 2 * cbrt(r) * cos(((t + (360/(180.0/M_PI)))/3)) - B/3;
+        raizes[1].parteImaginaria = 0;
+      
+        raizes[2].parteReal = 2 * cbrt(r) * cos(((t + (720/(180.0/M_PI)))/3)) - B/3;
+        raizes[2].parteImaginaria = 0;
     }
     
     printarSaidaEquacao(raizes, 3);
@@ -223,14 +267,14 @@ void resolveEquacaoGrau3(double a, double b, double c, double d)
 
 void resolveEquacao(double a, double b, double c, double d)
 {
-	if(a != 0)
-		resolveEquacaoGrau3(a, b, c, d);
-	else if (b != 0)
-		resolveEquacaoGrau2(b, c, d);
-	else if (c != 0)
-		resolveEquacaoGrau1(c, d);
-	else
-		resolveEquacaoGrau0(d);
+    if(a != 0)
+        resolveEquacaoGrau3(a, b, c, d);
+    else if (b != 0)
+        resolveEquacaoGrau2(b, c, d);
+    else if (c != 0)
+        resolveEquacaoGrau1(c, d);
+    else
+        resolveEquacaoGrau0(d);
 }
 
 int main(void) 
@@ -238,9 +282,6 @@ int main(void)
     lerNumeroEAplicarFatorial();
     lerEntradasEquacaoGrau2();
     lerEntradasEquacaoGrau3();
-    
-    //double _a[] = {2.1, 5.4, 5.8};
-    //printarSaidaEquacao(_a, 3);
 
     return 0;
 }
