@@ -8,12 +8,29 @@ typedef struct
     double parteImaginaria;
 } SaidaEquacao;
 
-float raiz(float num);
+float raiz(float num, float exp);
+float soma(float numero1, float numero2);
+float subtracao(float numero1, float numero2);
+float produto(float numero1, float numero2);
+float divisao(float numero1, float numero2);
+int mod(int numero1, int numero2);
+float potencia(float numero1, float numero2);
+unsigned long int fatorial(unsigned long int num);
 
+void limparConsole();
+void printarAbertura();
 void printarLinha();
-void printarSaidaEquacao(SaidaEquacao saidas[], int tamanhoDoArray);
-void printarFatorial(int numero, int numeroEmFatorial);
 
+void exibirMenuPrincipal();
+void exibirMenuCalculadoraBasica();
+void exibirMenuCalculadoraFatorial();
+void exibirMenuEquacaoGrau2();
+void exibirMenuEquacaoGrau3();
+
+void printarSaidaEquacao(SaidaEquacao saidas[], int tamanhoDoArray);
+void printarFatorial(unsigned long int numero, unsigned long int numeroEmFatorial);
+
+void aguardarEntrada();
 void lerEntradasEquacaoGrau2();
 void lerEntradasEquacaoGrau3();
 void lerNumeroEAplicarFatorial();
@@ -24,12 +41,143 @@ void resolveEquacaoGrau1(double a, double b);
 void resolveEquacaoGrau2(double a, double b, double c);
 void resolveEquacaoGrau3(double a, double b, double c, double d);
 
-// Operacoes Basicas ---------------
-float raiz(float num)
+void aguardarEntrada()
 {
-    return sqrt(num);
+    fflush(stdin);
+    char c = getchar();
+    c = getchar();
 }
 
+void exibirMenuPrincipal()
+{
+    menu:
+    {
+        limparConsole();
+        printarAbertura();
+        
+        int opcao;
+        printf("\n\n Escolha um operacao:     \n \n ");
+        printf ("1) Calculadora Basica\n ");
+        printf ("2) Calcular Fatorial \n ");
+        printf ("3) Equacao de Segundo Grau \n ");
+        printf ("4) Equacao de Terceiro Grau \n ");
+        printf ("\n\n ---> ");
+        scanf("%d", &opcao);
+
+        switch(opcao)
+        {
+          case 1:
+              exibirMenuCalculadoraBasica();
+              break;
+          case 2:
+              exibirMenuCalculadoraFatorial();
+              break;
+          case 3:
+              exibirMenuEquacaoGrau2();
+              break;
+          case 4:
+              exibirMenuEquacaoGrau3();
+              break;
+          default:
+              goto menu;
+        }
+    }
+}
+
+void exibirMenuCalculadoraBasica()
+{
+    calcBasica:
+    {
+        limparConsole();
+        printarAbertura();
+        
+        float num1, num2;
+        char oper;
+
+        printf("Calculadora das 4 operacoes\n\n");
+
+        printf("Operacoes disponiveis\n\n");
+        printf("'+' : soma\n");
+        printf("'-' : subtracao\n");
+        printf("'*' : multiplicao\n");
+        printf("'/' : divisao\n");
+        printf("'%%' : resto da divisao\n");
+        printf("'p' : potencia\n");
+        printf("'r' : raiz\n");
+
+        printf("\nDigite a expressao no formato: numero1 operador numero2\n");
+        printf("Exemplos: 2 + 2 ,  3.6 * 9\n");
+        printf("Para voltar digite: 0 0 0\n\n");
+
+        scanf("%f", &num1);
+        scanf(" %c",&oper);
+        scanf("%f", &num2);
+
+        limparConsole();
+
+        printf("Calculando: %.2f %c %.2f = ", num1,oper,num2);
+
+        switch( oper )
+        {
+            case '+':
+                printf("%.2f\n\n", soma(num1, num2));
+                break;
+            case '-':
+                printf("%.2f\n\n", subtracao(num1, num2));
+                break;
+            case '*':
+                printf("%.2f\n\n", produto(num1, num2));
+                break;
+            case '/':
+                if(num2 != 0)
+                    printf("%.2f\n\n", divisao(num1, num2));
+                else
+                    printf("Nao existe divisao por 0\n\n");
+                break;
+            case '%':
+                printf("%d\n\n", mod((int)num1, (int)num2));
+                break;
+            case 'p':
+                printf("%f\n\n", potencia(num1, num2));
+                break;
+            case 'r':
+                printf("%f\n\n", raiz(num1, num2));
+                break;
+            default:
+                if(num1 == 0 && oper == '0' && num2 == 0)
+                {
+                    exibirMenuPrincipal();
+                    return;
+                }
+        }
+
+        aguardarEntrada();
+        goto calcBasica;
+    }
+}
+
+void exibirMenuCalculadoraFatorial()
+{
+    lerNumeroEAplicarFatorial();
+    aguardarEntrada();
+    exibirMenuPrincipal();
+}
+
+void exibirMenuEquacaoGrau2()
+{
+    lerEntradasEquacaoGrau2();
+    aguardarEntrada();
+    exibirMenuPrincipal();
+}
+
+void exibirMenuEquacaoGrau3()
+{
+    lerEntradasEquacaoGrau3();
+    aguardarEntrada();
+    exibirMenuPrincipal();
+}
+
+// Operacoes Basicas ---------------
 float soma(float numero1, float numero2)
 {
     return numero1 + numero2;
@@ -55,7 +203,17 @@ int mod(int numero1, int numero2)
     return numero1 % numero2;
 }
 
-int fatorial(int num)
+float raiz(float num, float exp)
+{
+	  return pow(num, 1/exp); //sqrt(num);
+}
+
+float potencia(float numero1, float numero2)
+{
+    return pow(numero1, numero2);
+}
+
+unsigned long int fatorial(unsigned long int num)
 {
     if(num <= 1)
         return 1;
@@ -64,6 +222,22 @@ int fatorial(int num)
 }
 
 // Printando Itens ---------------
+void limparConsole()
+{
+    system("cls || clear");
+}
+
+void printarAbertura()
+{
+    printarLinha();
+    puts("Calculadora Em C");
+    puts("Introducao ao computador - 2021.2 UFPB");
+    puts("Alunos: Diego Reis, Victor Cavalcanti, "
+                  "Isaura Maia, Cassio Victor, Ciro Ramos, "
+                  "Joao Pedro e Kalil de Sousa");
+    printarLinha();
+}
+
 void printarLinha()
 {
     int i = 0;
@@ -98,9 +272,9 @@ void printarSaidaEquacao(SaidaEquacao saidas[], int tamanhoDoArray)
     printarLinha();
 }
 
-void printarFatorial(int numero, int numeroEmFatorial)
+void printarFatorial(unsigned long int numero, unsigned long int numeroEmFatorial)
 {
-    printf("\nNumero %d em fatorial: %d\n", numero, numeroEmFatorial);
+    printf("\nNumero %ld em fatorial: %ld\n", numero, numeroEmFatorial);
     printarLinha();
 }
 
@@ -172,38 +346,38 @@ void resolveEquacaoGrau1(double a, double b)
 
 void resolveEquacaoGrau2(double a, double b, double c)
 {
-    SaidaEquacao raizes[2];
+  SaidaEquacao raizes[2];
     
-    float delta = b*b - 4*a*c;
+	float delta = b*b - 4*a*c;
 	
-    if(delta < 0)
-    {
-        delta *= -1;
+  if(delta < 0)
+  {
+    delta *= -1;
 
-        raizes[0].parteReal = 0;
-        raizes[0].parteImaginaria = (-b + raiz(delta))/(2*a);
+    raizes[0].parteReal = 0;
+    raizes[0].parteImaginaria = (-b + sqrt(delta))/(2*a);
     
-	raizes[1].parteReal = 0;
-	raizes[1].parteImaginaria = (-b - raiz(delta))/(2*a);
+		raizes[1].parteReal = 0;
+		raizes[1].parteImaginaria = (-b - sqrt(delta))/(2*a);
 
-        printarSaidaEquacao(raizes, 2);
-    }
-    else if(delta == 0)
-    {
-        raizes[0].parteReal = -b/2*a;
-        raizes[0].parteImaginaria = 0;
-	printarSaidaEquacao(raizes, 1);
-    }
-    else
-    {
-        raizes[0].parteReal = (-b + raiz(delta))/(2*a);
-        raizes[0].parteImaginaria = 0;
+    printarSaidaEquacao(raizes, 2);
+  }
+	else if(delta == 0)
+	{
+		raizes[0].parteReal = -b/2*a;
+    raizes[0].parteImaginaria = 0;
+		printarSaidaEquacao(raizes, 1);
+	}
+	else
+	{
+		raizes[0].parteReal = (-b + sqrt(delta))/(2*a);
+    raizes[0].parteImaginaria = 0;
     
-	raizes[1].parteReal = (-b - raiz(delta))/(2*a);
-	raizes[1].parteImaginaria = 0;
+		raizes[1].parteReal = (-b - sqrt(delta))/(2*a);
+		raizes[1].parteImaginaria = 0;
     
-	printarSaidaEquacao(raizes, 2);
-    }
+	  printarSaidaEquacao(raizes, 2);
+	}
 }
 
 void resolveEquacaoGrau3(double a, double b, double c, double d)
@@ -267,21 +441,23 @@ void resolveEquacaoGrau3(double a, double b, double c, double d)
 
 void resolveEquacao(double a, double b, double c, double d)
 {
-    if(a != 0)
-        resolveEquacaoGrau3(a, b, c, d);
-    else if (b != 0)
-        resolveEquacaoGrau2(b, c, d);
-    else if (c != 0)
-        resolveEquacaoGrau1(c, d);
-    else
-        resolveEquacaoGrau0(d);
+	if(a != 0)
+		resolveEquacaoGrau3(a, b, c, d);
+	else if (b != 0)
+		resolveEquacaoGrau2(b, c, d);
+	else if (c != 0)
+		resolveEquacaoGrau1(c, d);
+	else
+		resolveEquacaoGrau0(d);
 }
 
 int main(void) 
 {
-    lerNumeroEAplicarFatorial();
-    lerEntradasEquacaoGrau2();
-    lerEntradasEquacaoGrau3();
+    exibirMenuPrincipal();
+    //printarAbertura();
+    //lerNumeroEAplicarFatorial();
+    //lerEntradasEquacaoGrau2();
+    //lerEntradasEquacaoGrau3();
 
     return 0;
 }
