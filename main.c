@@ -233,7 +233,7 @@ void printarAbertura()
     puts("Calculadora Em C");
     puts("Introducao ao computador - 2021.2 UFPB");
     puts("Alunos: Diego Reis, Victor Cavalcanti, "
-                  "Isaura Maia, Cassio Victor, Ciro Ramos, "
+                  "Isaura Maia, Cassio Vittori, Ciro Ramos, "
                   "Joao Pedro e Kalil de Sousa");
     printarLinha();
 }
@@ -454,10 +454,5 @@ void resolveEquacao(double a, double b, double c, double d)
 int main(void) 
 {
     exibirMenuPrincipal();
-    //printarAbertura();
-    //lerNumeroEAplicarFatorial();
-    //lerEntradasEquacaoGrau2();
-    //lerEntradasEquacaoGrau3();
-
     return 0;
 }
